@@ -3,6 +3,8 @@ package com.jacaranda.Students.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +14,6 @@ import com.jacaranda.Students.models.Student;
 import com.jacaranda.Students.services.PruebaServices;
 
 @Controller
-//@RequestMapping("/cono")
 public class PruebaController {
 	
 	@Autowired
@@ -48,15 +49,19 @@ public class PruebaController {
 		return "redirect:/estudiantes";
 	}
 	
-	@GetMapping("/add")
-	public String addStudent(Model model,
+	@GetMapping("/add")	 
+	public String addStudent(@Validated Model model, BindingResult bindingResult,
 			@RequestParam(name="name", required=false, defaultValue="") String name,
 			@RequestParam(name="surname", required=false, defaultValue="") String surname,
 			@RequestParam(name="age", required=false, defaultValue="") int age
 			) {
-		Student student = new Student(name,surname,age);
-		repositorio.addStudent(student);
-		return "redirect:/estudiantes";
+		if(bindingResult.hasErrors()) {
+			return "add";
+		}else {			
+			Student student = new Student(name,surname,age);
+			repositorio.addStudent(student);
+			return "redirect:/estudiantes";
+		}
 	}
 	
 	
